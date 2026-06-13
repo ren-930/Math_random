@@ -70,13 +70,13 @@ button{
 
 <script>
 
+loadData();
 createInputs();
 
 function createInputs(){
 
-    const count = Number(
-        document.getElementById("sheetCount").value
-    );
+    const count =
+        Number(document.getElementById("sheetCount").value);
 
     const area = document.getElementById("sheetInputs");
     area.innerHTML = "";
@@ -113,35 +113,80 @@ function generate(){
             Number(document.getElementById(`sheet${i}`).value);
 
         for(let j=1;j<=questionCount;j++){
-
             allQuestions.push(`${i}-${j}`);
         }
     }
 
     if(n > allQuestions.length){
-
-        alert(
-          `問題総数は ${allQuestions.length} 問です`
-        );
+        alert(`問題総数は ${allQuestions.length} 問です`);
         return;
     }
 
-    // Fisher-Yates Shuffle
+    // シャッフル
     for(let i=allQuestions.length-1;i>0;i--){
-
-        const r =
-            Math.floor(Math.random()*(i+1));
-
-        [allQuestions[i], allQuestions[r]]
-            =
+        const r = Math.floor(Math.random()*(i+1));
+        [allQuestions[i], allQuestions[r]] =
         [allQuestions[r], allQuestions[i]];
     }
 
-    const result =
-        allQuestions.slice(0,n);
+    const result = allQuestions.slice(0,n);
 
     document.getElementById("result").textContent =
         result.join("\n");
+
+    saveData();
+}
+
+function saveData(){
+
+    const sheetCount =
+        document.getElementById("sheetCount").value;
+
+    const generateCount =
+        document.getElementById("generateCount").value;
+
+    localStorage.setItem("sheetCount", sheetCount);
+    localStorage.setItem("generateCount", generateCount);
+
+    const inputs = document.querySelectorAll("#sheetInputs input");
+
+    const sheetValues = [];
+
+    inputs.forEach(input => {
+        sheetValues.push(input.value);
+    });
+
+    localStorage.setItem("sheetValues", JSON.stringify(sheetValues));
+}
+
+function loadData(){
+
+    const sheetCount =
+        localStorage.getItem("sheetCount");
+
+    const generateCount =
+        localStorage.getItem("generateCount");
+
+    if(sheetCount){
+        document.getElementById("sheetCount").value = sheetCount;
+    }
+
+    if(generateCount){
+        document.getElementById("generateCount").value = generateCount;
+    }
+
+    createInputs();
+
+    const sheetValues =
+        JSON.parse(localStorage.getItem("sheetValues") || "[]");
+
+    const inputs = document.querySelectorAll("#sheetInputs input");
+
+    inputs.forEach((input, i) => {
+        if(sheetValues[i]){
+            input.value = sheetValues[i];
+        }
+    });
 }
 
 </script>
