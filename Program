@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>問題番号ランダム生成</title>
+
+<style>
+body{
+    font-family:sans-serif;
+    max-width:700px;
+    margin:40px auto;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+}
+
+input{
+    width:80px;
+    margin:5px;
+}
+
+button{
+    padding:10px 20px;
+    margin-top:10px;
+    cursor:pointer;
+}
+
+.sheet{
+    margin-bottom:8px;
+}
+
+#result{
+    margin-top:20px;
+    padding:15px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    white-space:pre-line;
+}
+</style>
+</head>
+
+<body>
+
+<h1>問題番号ランダム生成</h1>
+
+<label>
+プリント数：
+<input type="number" id="sheetCount" value="3" min="1">
+</label>
+
+<button onclick="createInputs()">設定作成</button>
+
+<div id="sheetInputs"></div>
+
+<hr>
+
+<label>
+生成数：
+<input type="number" id="generateCount" value="10" min="1">
+</label>
+
+<br>
+
+<button onclick="generate()">生成</button>
+
+<div id="result"></div>
+
+<script>
+
+createInputs();
+
+function createInputs(){
+
+    const count = Number(
+        document.getElementById("sheetCount").value
+    );
+
+    const area = document.getElementById("sheetInputs");
+    area.innerHTML = "";
+
+    for(let i=1;i<=count;i++){
+
+        const div = document.createElement("div");
+        div.className = "sheet";
+
+        div.innerHTML =
+        `プリント${i} 問題数 :
+        <input type="number"
+               id="sheet${i}"
+               value="20"
+               min="1">`;
+
+        area.appendChild(div);
+    }
+}
+
+function generate(){
+
+    const sheetCount =
+        Number(document.getElementById("sheetCount").value);
+
+    const n =
+        Number(document.getElementById("generateCount").value);
+
+    const allQuestions = [];
+
+    for(let i=1;i<=sheetCount;i++){
+
+        const questionCount =
+            Number(document.getElementById(`sheet${i}`).value);
+
+        for(let j=1;j<=questionCount;j++){
+
+            allQuestions.push(`${i}-${j}`);
+        }
+    }
+
+    if(n > allQuestions.length){
+
+        alert(
+          `問題総数は ${allQuestions.length} 問です`
+        );
+        return;
+    }
+
+    // Fisher-Yates Shuffle
+    for(let i=allQuestions.length-1;i>0;i--){
+
+        const r =
+            Math.floor(Math.random()*(i+1));
+
+        [allQuestions[i], allQuestions[r]]
+            =
+        [allQuestions[r], allQuestions[i]];
+    }
+
+    const result =
+        allQuestions.slice(0,n);
+
+    document.getElementById("result").textContent =
+        result.join("\n");
+}
+
+</script>
+
+</body>
+</html>
